@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "ShoppingApp",
+    "slug": "shoppingapp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "bundleIdentifier": "com.shoppingapp.dev"
+    },
+    "android": {
+      "package": "com.shoppingapp.dev",
+      "usesCleartextTraffic": true
+    },
+    "plugins": [
+      "@react-native-google-signin/google-signin"
+    ]
+  }
+}
