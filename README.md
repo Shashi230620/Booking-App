@@ -1,50 +1,114 @@
-# Welcome to your Expo app 👋
+# Fresh Grocery App 🍎
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native mobile application for browsing fresh groceries, managing a shopping cart, and simulating a checkout process. The app uses **Firebase** for backend services (Authentication and Database).
 
-## Get started
+## 📋 Table of Contents
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation & Setup](#installation--setup)
+- [Firebase Configuration](#firebase-configuration)
+- [Architecture & Logic](#architecture--logic)
+  - [Authentication](#authentication)
+  - [Firestore Data Structure](#firestore-data-structure)
+  - [Inventory Management](#inventory-management)
+- [Assumptions & Limitations](#assumptions--limitations)
 
-1. Install dependencies
+## ✨ Features
+- **User Authentication:** Sign up, Sign in, signin with google.
+- **Product Browsing:** View popular items and filter via an expanded search view.
+- **Product Details:** Detailed view of products with price, description, and rating.
+- **Shopping Cart:** Add items, adjust quantities, and remove items.
 
+## 🛠 Prerequisites
+- Node.js
+- npm
+- Expo CLI
+- Expo Go app on a physical device.
+
+Here is the **Installation & Setup** section.
+
+## 🚀 Installation & Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Shashi230620/Booking-App.git
+   cd Booking-App
+   ```
+
+2. **Install dependencies:**
    ```bash
    npm install
    ```
 
-2. Start the app
-
+3. **Run the application:**
    ```bash
-   npx expo start
+   npx expo run:android
    ```
 
-In the output, you'll find options to open the app in a
+4. **Launch:**
+   - Scan the QR code with your phone (Expo Go).
+   - Make sure your mobile phone has usb debugging turned on.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🔥 Firebase Configuration
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+This app requires a Firebase project with **Authentication** and **Firestore** enabled.
 
-## Get a fresh project
+1. Create a project at [console.firebase.google.com](https://console.firebase.google.com/).
+2. Enable **Authentication** (Email/Password provider).
+3. Enable **Cloud Firestore** (Start in Test Mode for development).
+4. Create a file named `firebaseConfig.ts` in the `@/Services/` directory.
+5. Paste your credentials:
 
-When you're ready, run:
+```ts
+// @/Services/firebaseConfig.ts
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
-```bash
-npm run reset-project
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
+## 🧠 Architecture & Logic
 
-To learn more about developing your project with Expo, look at the following resources:
+### Authentication
+Authentication is handled via **Firebase Auth**.
+- **State Management:** An `AuthContext` wraps the application. It uses an `onAuthStateChanged` listener to detect if a user is logged in or out.
+- **Navigation Flow:** The `AppNavigator` listens to the `user` state.
+  - If `user` exists: Renders the **Main Stack** (Home, Details, Cart).
+  - If `user` is null: Renders the **Auth Stack** (Login, Signup).
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Firestore Data Structure
+The app relies on a collection named `products`.
 
-## Join the community
+**Collection:** `products`
+**Document Structure:**
+```json
+{
+  "id": "auto-generated-or-custom-id",
+  "name": "Avocado",
+  "price": 12.00,
+  "description": "Fresh organic avocados.",
+  "category": "Fruits",
+  "imageUrl": "https://example.com/avocado.png",
+  "rating": 4.5,
+  "stock": 10,
+  "unit": "kg"
+}
+```
 
-Join our community of developers creating universal apps.
+## ⚠️ Assumptions & Limitations
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+1. **Search Logic:** Search filtering is performed client-side on the fetched dataset. For very large datasets, this should be moved to a backend Algolia/Firestore query.
+2. **Data Entry:** The app assumes the Firestore database is pre-populated with products. If the database is empty, the app displays a "No products found" message.
